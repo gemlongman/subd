@@ -266,19 +266,18 @@
 
 		document.getElementById('import').addEventListener('change', loadLocalModel, false);
 
-		var subdMaterial = new THREE.MeshPhongMaterial( { ambient: 0xffffff, color: 0xdddddd, specular: 0 } );
-		var subdInsideMaterial = new THREE.MeshPhongMaterial( { ambient: 0x303030, color: 0xdddddd, specular: 0 } );
+		var subdMaterial = new THREE.MeshPhongMaterial( { ambient: 0x00ff00, color: 0x0000dd, specular: 0 } );// ffffff grey dddddd grey 
+		var subdInsideMaterial = new THREE.MeshPhongMaterial( { ambient: 0x303030, color: 0xdddddd, specular: 0 } );//0x303030 black 0xdddddd grey
+		var subdWireMaterial = new THREE.LineBasicMaterial({ color: 0x404040 });//black
+		var controlWireMaterial = new THREE.LineBasicMaterial({ color: 0x008000 });//green
 
-		var subdWireMaterial = new THREE.LineBasicMaterial({ color: 0x404040 });
-		var controlWireMaterial = new THREE.LineBasicMaterial({ color: 0x008000 });
-
-		var enableControlGeometry = true;
+		var enableControlGeometry = false; 
 		var enableWireframe = true;
 		var enableVerts = false;
 		var vertShrink = 0;
-		var enableShadows = false;
+		var enableShadows = false;//shadows line
 		var enablePlane = false;
-		var smoothLevel = 3;
+		var smoothLevel = 0;
 
 		var scene = null;
 
@@ -346,11 +345,13 @@
 			}
 
 			if (model) {
+				//net line over surface
 				if (enableControlGeometry) {
 					var controlWireObject = new THREE.Line(controlWireGeometry, controlWireMaterial, THREE.LinePieces);
 					scene.add(controlWireObject);
 				}
 
+				//surface
 				var subdObject = new THREE.Mesh(subdGeometry, subdMaterial);
 				if (enableShadows) {
 					subdObject.castShadow = true;
@@ -365,6 +366,7 @@
 				}
 				scene.add(subdInsideObject);
 
+				//color point no use
 				if (enableVerts) {
 					for (var i = 0; i < subdMesh.verts.length; i++) {
 						var vert = subdMesh.verts[i];
@@ -376,12 +378,14 @@
 					}
 				}
 
-				if (enableWireframe) {
+				//line for quad face net of surface
+				if (!enableWireframe) {
 					var subdWireObject = new THREE.Line(subdWireGeometry, subdWireMaterial, THREE.LinePieces);
 					scene.add(subdWireObject);
 				}
 			}
 
+			// plane face
 			if (enablePlane) {
 				var plane = new THREE.Mesh(new THREE.PlaneGeometry(10, 10, 1, 1), subdMaterial);
 				plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), -3.14159/2);
